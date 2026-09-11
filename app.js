@@ -162,11 +162,19 @@
 
   let signedIn = false;
 
-  async function loadAll(){
-    const [lehengas, bookings] = await Promise.all([
+  async function fetchBoth(){
+    return Promise.all([
       sb.from('lehengas').select('*').order('code', { nullsFirst: false }),
       sb.from('bookings').select('*')
     ]);
+  }
+
+  async function loadAll(){
+    let [lehengas, bookings] = await fetchBoth();
+    if (lehengas.error || bookings.error) {
+      await new Promise(r => setTimeout(r, 700));
+      [lehengas, bookings] = await fetchBoth();
+    }
     if (lehengas.error || bookings.error) {
       storeState = 'offline';
       renderStoreNote();
@@ -853,27 +861,32 @@
     r.readAsText(file);
   }
 
+  const withTimeout = (promise, ms, label) => Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject({ code: 'timeout', message: label }), ms))
+  ]);
+
   async function runImport(btn){
     if (!pendingImport || !requireStore()) return;
     btn.disabled = true;
     btn.textContent = 'Restoring…';
     let done = 0, failed = 0;
-    for (const l of pendingImport.lehengas) {
-      const row = Object.assign({ id: l.id }, lehengaToRow(l));
-      const { error } = await sb.from('lehengas').upsert(row);
-      error ? failed++ : done++;
-    }
-    for (const b of pendingImport.bookings) {
-      const row = Object.assign({ id: b.id }, bookingToRow(b));
-      const { error } = await sb.from('bookings').upsert(row);
-      error ? failed++ : done++;
-    }
+    const restore = async (table, row) => {
+      try {
+        const { error } = await withTimeout(sb.from(table).upsert(row), 15000, 'slow connection');
+        error ? failed++ : done++;
+      } catch (e) { failed++; }
+    };
+    for (const l of pendingImport.lehengas) await restore('lehengas', Object.assign({ id: l.id }, lehengaToRow(l)));
+    for (const b of pendingImport.bookings) await restore('bookings', Object.assign({ id: b.id }, bookingToRow(b)));
     pendingImport = null;
     await loadAll();
     btn.disabled = false;
     btn.textContent = 'Restore';
     renderBackup();
-    toast(failed ? `Restored ${done} rows. ${failed} could not be written.` : `Restored ${done} rows from the backup.`);
+    toast(failed
+      ? `Restored ${done} rows. ${failed} could not be written — they may be from an older version of the app.`
+      : `Restored ${done} rows from the backup.`);
   }
 
   function renderBackup(){
