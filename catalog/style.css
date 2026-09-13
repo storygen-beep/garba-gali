@@ -65,10 +65,10 @@ h1, h2, .display { font-family: "Yatra One", serif; font-weight: 400; }
   font-size: 8.5pt; letter-spacing: .04em; background: rgba(6,38,23,.66); }
 
 .piece { page: lookbook; height: 210mm; display: flex; flex-direction: column; }
-.piece .photo { flex: 1; overflow: hidden; background: var(--paper-2); display: flex; align-items: center; justify-content: center; }
-.piece .photo img { width: 100%; height: 100%; object-fit: cover; }
+.piece .photo { height: 168mm; overflow: hidden; background: var(--cream); display: flex; align-items: center; justify-content: center; }
+.piece .photo img { max-width: 148mm; max-height: 168mm; object-fit: contain; }
 .piece .photo .missing { color: var(--muted); font-size: 9pt; letter-spacing: .1em; text-transform: uppercase; }
-.piece .plate { padding: 7mm 12mm 9mm; display: flex; align-items: flex-end; justify-content: space-between; gap: 6mm; border-top: 0.4mm solid var(--rule); }
+.piece .plate { height: 42mm; padding: 7mm 12mm 9mm; display: flex; align-items: flex-end; justify-content: space-between; gap: 6mm; border-top: 0.4mm solid var(--rule); }
 .piece .name { font-size: 15pt; font-weight: 600; line-height: 1.2; margin: 0; }
 .piece .attrs { margin: 1.5mm 0 0; font-size: 9pt; color: var(--ink-2); }
 .attrs .dot { width: 2.8mm; height: 2.8mm; vertical-align: -0.4mm; margin-right: 1.2mm; }

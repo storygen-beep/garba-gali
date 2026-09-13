@@ -36,6 +36,7 @@ SECRETS = Path.home() / "Documents" / "garba_gali" / "secrets" / "supabase.env"
 PHOTO_DIR = HERE / "photos"
 OUT_DIR = HERE / "out"
 PHOTO_EXT = (".jpg", ".jpeg", ".png", ".heic", ".HEIC", ".JPG", ".JPEG", ".PNG")
+QUALITY = 82   # raised with --quality for a print run
 
 SHOP = {
     "name": "Ghaghra Gali",
@@ -76,36 +77,54 @@ def fetch_stock():
         print("No Supabase credentials found; building from photos only.")
         return []
     req = urllib.request.Request(
-        f"{url}/rest/v1/lehengas?select=code,title,colour,size&order=code",
+        f"{url}/rest/v1/lehengas?select=code,title,colour,size,photo_path&order=photo_path.asc,title.asc",
         headers={"apikey": key, "Authorization": f"Bearer {key}"},
     )
     with urllib.request.urlopen(req) as r:
         return json.loads(r.read())
 
 
-def find_photo(code):
-    for ext in PHOTO_EXT:
-        p = PHOTO_DIR / f"{code}{ext}"
-        if p.exists():
-            return p
+def find_photo(item):
+    """Local file first (print copies live in catalog/photos), then the app storage."""
+    stored = item.get("photo_path")
+    if stored and (PHOTO_DIR / stored).exists():
+        return PHOTO_DIR / stored
+    for key in (item.get("code"), item.get("title")):
+        for ext in PHOTO_EXT:
+            if key and (PHOTO_DIR / f"{key}{ext}").exists():
+                return PHOTO_DIR / f"{key}{ext}"
+    if stored:
+        env = read_secrets()
+        cached = PHOTO_DIR / stored
+        try:
+            urllib.request.urlretrieve(f"{env['SUPABASE_URL']}/storage/v1/object/public/photos/{stored}", cached)
+            return cached
+        except Exception:
+            return None
     return None
 
 
-def prepared_photo(path, target_px, cache):
+def prepared_photo(path, target_px, cache, crop=True):
     """Crop to 4:5, resize to the printed size at 300 dpi, embed as JPEG.
 
     WeasyPrint has no WebP filter and inflates such images inside the PDF, so
     everything becomes JPEG here regardless of what came in.
     """
-    key = (str(path), target_px)
+    key = (str(path), target_px, crop)
     if key in cache:
         return cache[key]
     img = Image.open(path)
     img = ImageOps.exif_transpose(img)          # honour the phone's rotation flag
     img = img.convert("RGB")
-    img = ImageOps.fit(img, (target_px, int(target_px * 1.25)), Image.LANCZOS, centering=(0.5, 0.4))
+    # Never upscale: enlarging past the source adds bytes and no detail.
+    target_px = min(target_px, img.width)
+    if crop:
+        img = ImageOps.fit(img, (target_px, int(target_px * 1.25)), Image.LANCZOS, centering=(0.5, 0.4))
+    else:
+        # A full-length garment must not lose its hem, so the lookbook keeps the whole frame.
+        img.thumbnail((target_px, target_px * 3), Image.LANCZOS)
     buf = io.BytesIO()
-    img.save(buf, "JPEG", quality=86, optimize=True, progressive=True)
+    img.save(buf, "JPEG", quality=QUALITY, optimize=True, progressive=True)
     uri = "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
     cache[key] = uri
     return uri
@@ -155,11 +174,11 @@ def attrs_html(item):
     return " · ".join(bits)
 
 
-def photo_html(item, target_px, cache):
+def photo_html(item, target_px, cache, crop=True):
     path = item.get("_photo")
     if not path:
         return '<span class="missing">photo to come</span>'
-    return f'<img src="{prepared_photo(path, target_px, cache)}" alt="{esc(item["title"])}">'
+    return f'<img src="{prepared_photo(path, target_px, cache, crop)}" alt="{esc(item["title"])}">'
 
 
 LOGO = HERE.parent / "assets" / "logo.png"
@@ -212,11 +231,11 @@ def back_html(qr):
 </section>'''
 
 
-def build_lookbook(items, cache, qr):
+def build_lookbook(items, cache, qr, light=False):
     pages = [cover_html()]
     for it in items:
         pages.append(f'''<section class="piece">
-  <div class="photo">{photo_html(it, 1240, cache)}</div>
+  <div class="photo">{photo_html(it, 820 if light else 1100, cache, crop=False)}</div>
   <div class="plate">
     <div>
       <p class="name">{esc(it["title"])}</p>
@@ -260,15 +279,19 @@ def main():
     ap.add_argument("--instagram", default="")
     ap.add_argument("--address", default="")
     ap.add_argument("--whatsapp", default="", help="digits for the wa.me QR, e.g. 919812345678")
+    ap.add_argument("--quality", type=int, default=82, help="JPEG quality: 82 for WhatsApp, 90 for print")
+    ap.add_argument("--light", action="store_true", help="smaller file for sharing on mobile data")
     ap.add_argument("--html", action="store_true", help="also write the HTML, for debugging")
     args = ap.parse_args()
 
+    global QUALITY
+    QUALITY = args.quality
     SHOP.update(phone=args.phone, instagram=args.instagram, address=args.address)
     OUT_DIR.mkdir(exist_ok=True)
 
     items = fetch_stock()
     for it in items:
-        it["_photo"] = find_photo(it.get("code") or "") or find_photo(it.get("title") or "")
+        it["_photo"] = find_photo(it)
     for n in range(args.demo):
         items.append({"code": f"GG-{len(items) + 1:02d}", "title": "Sample piece",
                       "colour": list(COLOURS)[n % len(COLOURS)], "size": "M", "_photo": None})
@@ -288,17 +311,21 @@ def main():
     cache = {}
 
     targets = []
+    suffix = "-whatsapp" if args.light else ""
+    if args.light:
+        QUALITY = min(QUALITY, 70)
     if args.only != "sheet":
-        targets.append(("lookbook", build_lookbook(items, cache, qr), "ghaghra-gali-lookbook.pdf"))
+        targets.append(("lookbook", build_lookbook(items, cache, qr, light=args.light),
+                        f"ghaghra-gali-lookbook{suffix}.pdf"))
     if args.only != "lookbook":
-        targets.append(("sheet", build_sheet(items, cache), "ghaghra-gali-counter-sheet.pdf"))
+        targets.append(("sheet", build_sheet(items, cache), f"ghaghra-gali-counter-sheet{suffix}.pdf"))
 
     for label, body, filename in targets:
         html = document(body)
         if args.html:
             (OUT_DIR / f"{label}.html").write_text(html)
         out = OUT_DIR / filename
-        HTML(string=html, base_url=str(HERE)).write_pdf(out, optimize_images=True, jpeg_quality=86, dpi=300)
+        HTML(string=html, base_url=str(HERE)).write_pdf(out, optimize_images=True, jpeg_quality=QUALITY, dpi=300)
         print(f"  {label}: {out}  ({out.stat().st_size / 1_000_000:.1f} MB)")
 
 
