@@ -77,7 +77,7 @@ def fetch_stock():
         print("No Supabase credentials found; building from photos only.")
         return []
     req = urllib.request.Request(
-        f"{url}/rest/v1/lehengas?select=code,title,colour,size,photo_path&order=photo_path.asc,title.asc",
+        f"{url}/rest/v1/lehengas?select=code,title,colour,size,photo_path,photos&order=created_at.asc",
         headers={"apikey": key, "Authorization": f"Bearer {key}"},
     )
     with urllib.request.urlopen(req) as r:
@@ -192,6 +192,18 @@ def logo_block():
     return f'{MANDALA}<h1>{esc(SHOP["name"])}</h1>'
 
 
+def view_thumbs(item, cache):
+    """The back and detail shots, small, so one piece still means one page."""
+    extra = [v for v in (item.get("photos") or []) if v != item.get("photo_path")]
+    out = []
+    for v in extra[:2]:
+        path = PHOTO_DIR / v
+        if not path.exists():
+            continue
+        out.append(f'<img src="{prepared_photo(path, 320, cache)}" alt="">')
+    return f'<div class="views">{"".join(out)}</div>' if out else ""
+
+
 def cover_html():
     return f'''<section class="cover bandhani">
   <div class="cover-art">
@@ -237,10 +249,11 @@ def build_lookbook(items, cache, qr, light=False):
         pages.append(f'''<section class="piece">
   <div class="photo">{photo_html(it, 820 if light else 1100, cache, crop=False)}</div>
   <div class="plate">
-    <div>
+    <div class="plate-text">
       <p class="name">{esc(it["title"])}</p>
       <p class="attrs">{attrs_html(it)}</p>
     </div>
+    {view_thumbs(it, cache)}
     <div class="code"><span class="no">No.</span>{esc(it["ref"])}</div>
   </div>
 </section>''')
