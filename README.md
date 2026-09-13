@@ -1,4 +1,4 @@
-# Garba Gali
+# Ghaghra Gali
 
 Booking tool for a Navratri lehenga rental store: what is free on which night,
 who has what, what comes back each morning, and the money owed.

@@ -1,4 +1,4 @@
-/* Garba Gali catalogue — print styles. Two page sizes share one visual language:
+/* Ghaghra Gali catalogue — print styles. Two page sizes share one visual language:
    A5 lookbook (one piece per page) and A4 counter sheet (four per page). */
 
 @font-face { font-family: "Yatra One"; src: url("fonts/YatraOne-Regular.ttf"); font-weight: 400; }
@@ -66,13 +66,13 @@ h1, h2, .display { font-family: "Yatra One", serif; font-weight: 400; }
 .piece .name { font-size: 15pt; font-weight: 600; line-height: 1.2; margin: 0; }
 .piece .attrs { margin: 1.5mm 0 0; font-size: 9pt; color: var(--ink-2); }
 .attrs .dot { width: 2.8mm; height: 2.8mm; vertical-align: -0.4mm; margin-right: 1.2mm; }
-.piece .code { font-size: 13pt; font-weight: 700; color: var(--kumkum); letter-spacing: .04em; white-space: nowrap; }
+.piece .code { font-size: 15pt; font-weight: 700; color: var(--kumkum); letter-spacing: .04em; white-space: nowrap; }
 
 /* ---------- the counter sheet: A4, four per page ---------- */
 @page sheet {
   size: A4 portrait; margin: 14mm 12mm 16mm;
   @bottom-center {
-    content: "Garba Gali · Navratri 2026 · page " counter(page);
+    content: "Ghaghra Gali · Navratri 2026 · page " counter(page);
     font-family: "Hind", sans-serif; font-size: 7.5pt; color: #8C7E83;
   }
 }
@@ -88,7 +88,7 @@ h1, h2, .display { font-family: "Yatra One", serif; font-weight: 400; }
 .tile .photo .missing { color: var(--muted); font-size: 8pt; letter-spacing: .08em; text-transform: uppercase; }
 .tile .line { display: flex; align-items: baseline; justify-content: space-between; gap: 3mm; margin-top: 2.5mm; }
 .tile .name { font-size: 10.5pt; font-weight: 600; line-height: 1.25; }
-.tile .code { font-size: 10pt; font-weight: 700; color: var(--kumkum); white-space: nowrap; }
+.tile .code { font-size: 11pt; font-weight: 700; color: var(--kumkum); white-space: nowrap; }
 .tile .attrs { font-size: 8.5pt; color: var(--ink-2); margin-top: 0.5mm; }
 
 /* ---------- back page ---------- */
@@ -104,3 +104,6 @@ h1, h2, .display { font-family: "Yatra One", serif; font-weight: 400; }
 .back .ask b { color: var(--ink); display: block; font-size: 11pt; margin-bottom: 1.5mm; }
 .back .contact { padding: 0 12mm 10mm; font-size: 9.5pt; color: var(--ink-2); }
 .back .contact b { color: var(--kumkum); }
+
+.code .no { font-family: "Hind", sans-serif; font-weight: 500; font-size: 0.62em;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-right: 1mm; }

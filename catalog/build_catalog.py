@@ -1,4 +1,4 @@
-"""Build the Garba Gali catalogue: an A5 lookbook and an A4 counter sheet.
+"""Build the Ghaghra Gali catalogue: an A5 lookbook and an A4 counter sheet.
 
 Stock comes from the same Supabase tables the booking app uses, so the catalogue
 can never disagree with the app about what is in the collection. Photos come from
@@ -38,7 +38,7 @@ OUT_DIR = HERE / "out"
 PHOTO_EXT = (".jpg", ".jpeg", ".png", ".heic", ".HEIC", ".JPG", ".JPEG", ".PNG")
 
 SHOP = {
-    "name": "Garba Gali",
+    "name": "Ghaghra Gali",
     "tagline": "Chaniya cholis on rent",
     "season": "Navratri 2026 · 11–19 October",
     "phone": "",          # filled from --phone
@@ -182,14 +182,14 @@ def back_html(qr):
     qr_block = f'''<div class="ask">
       <div class="qr">{qr}</div>
       <p><b>Ask on WhatsApp</b>Scan, then send the code of the piece you want —
-      for example “GG-07”. We will tell you the rent and whether it is free on your night.</p>
+      for example “No. 07”. We will tell you the rent and whether it is free on your night.</p>
     </div>''' if qr else ""
     return f'''<section class="back">
   <div class="hem"></div>
   <div class="body">
     <h2>How renting works</h2>
     <ol>
-      <li><strong>Pick your piece and your night.</strong> Quote the code on the card.</li>
+      <li><strong>Pick your piece and your night.</strong> Quote the number on the card.</li>
       <li><strong>Pay an advance to hold it.</strong> Until the advance is paid the piece stays open to everyone.</li>
       <li><strong>Collect it the evening of your garba</strong>, with the balance and a refundable deposit.</li>
       <li><strong>Return it by 10 AM the next morning.</strong> Late returns hold up the next booking.</li>
@@ -212,7 +212,7 @@ def build_lookbook(items, cache, qr):
       <p class="name">{esc(it["title"])}</p>
       <p class="attrs">{attrs_html(it)}</p>
     </div>
-    <div class="code">{esc(it.get("code") or "")}</div>
+    <div class="code"><span class="no">No.</span>{esc(it["ref"])}</div>
   </div>
 </section>''')
     pages.append(back_html(qr))
@@ -226,7 +226,7 @@ def build_sheet(items, cache):
         chunk = items[i:i + per_page]
         tiles = "".join(f'''<div class="tile">
       <div class="photo">{photo_html(it, 760, cache)}</div>
-      <div class="line"><span class="name">{esc(it["title"])}</span><span class="code">{esc(it.get("code") or "")}</span></div>
+      <div class="line"><span class="name">{esc(it["title"])}</span><span class="code"><span class="no">No.</span>{esc(it["ref"])}</span></div>
       <div class="attrs">{attrs_html(it)}</div>
     </div>''' for it in chunk)
         pages.append(f'''<section class="sheet">
@@ -258,7 +258,7 @@ def main():
 
     items = fetch_stock()
     for it in items:
-        it["_photo"] = find_photo(it.get("code") or "")
+        it["_photo"] = find_photo(it.get("code") or "") or find_photo(it.get("title") or "")
     for n in range(args.demo):
         items.append({"code": f"GG-{len(items) + 1:02d}", "title": "Sample piece",
                       "colour": list(COLOURS)[n % len(COLOURS)], "size": "M", "_photo": None})
@@ -266,17 +266,22 @@ def main():
     if not items:
         sys.exit("No stock found. Add lehengas in the app, or run with --demo 8.")
 
+    # The shop keeps no codes, so the catalogue numbers the pieces itself. This is
+    # what a customer quotes on WhatsApp, so it is printed large on every card.
+    for n, it in enumerate(items, 1):
+        it["ref"] = f"{n:02d}"
+
     with_photos = sum(1 for it in items if it["_photo"])
     print(f"{len(items)} pieces, {with_photos} with photos, {len(items) - with_photos} awaiting one")
 
-    qr = qr_svg(f"https://wa.me/{args.whatsapp}?text=Hi%20Garba%20Gali,%20I%20would%20like%20to%20book%20GG-") if args.whatsapp else ""
+    qr = qr_svg(f"https://wa.me/{args.whatsapp}?text=Hi%20Garba%20Gali,%20I%20would%20like%20to%20book%20No.%20") if args.whatsapp else ""
     cache = {}
 
     targets = []
     if args.only != "sheet":
-        targets.append(("lookbook", build_lookbook(items, cache, qr), "garba-gali-lookbook.pdf"))
+        targets.append(("lookbook", build_lookbook(items, cache, qr), "ghaghra-gali-lookbook.pdf"))
     if args.only != "lookbook":
-        targets.append(("sheet", build_sheet(items, cache), "garba-gali-counter-sheet.pdf"))
+        targets.append(("sheet", build_sheet(items, cache), "ghaghra-gali-counter-sheet.pdf"))
 
     for label, body, filename in targets:
         html = document(body)

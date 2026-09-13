@@ -650,8 +650,7 @@
     let d;
     if (existing) d = Object.assign({}, existing);
     else {
-      const max = state.lehengas.reduce((mx, l) => Math.max(mx, parseInt(String(l.code || '').replace(/\D/g, ''), 10) || 0), 0);
-      d = { id: null, code: 'GG-' + String(max + 1).padStart(2, '0'), title: '', rent: '', deposit: '', colour: '', size: '', photoPath: null, createdAt: new Date().toISOString() };
+      d = { id: null, code: '', title: '', rent: '', deposit: '', colour: '', size: '', photoPath: null, createdAt: new Date().toISOString() };
     }
     peek = { type: 'lehenga', draft: d };
     openPeek(lehengaPeekHtml(d), existing ? `Lehenga: ${d.title}` : 'New lehenga');
@@ -822,7 +821,7 @@
       const s = String(v ?? '');
       return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
     }).join(',')).join('\n');
-    saveFile(`garba-gali-bookings-${TODAY}.csv`, csv, 'text/csv');
+    saveFile(`ghaghra-gali-bookings-${TODAY}.csv`, csv, 'text/csv');
   }
 
   /* ---------- backup ---------- */
@@ -830,14 +829,14 @@
 
   function backupPayload(){
     return {
-      app: 'garba-gali', version: 1, exportedAt: new Date().toISOString(),
+      app: 'ghaghra-gali', version: 1, exportedAt: new Date().toISOString(),
       lehengas: state.lehengas.map(l => Object.assign({}, l)),
       bookings: state.bookings.map(b => Object.assign({}, b))
     };
   }
 
   async function exportBackup(){
-    saveFile(`garba-gali-backup-${TODAY}.json`, JSON.stringify(backupPayload(), null, 1), 'application/json');
+    saveFile(`ghaghra-gali-backup-${TODAY}.json`, JSON.stringify(backupPayload(), null, 1), 'application/json');
     try { localStorage.setItem(BACKUP_KEY, new Date().toISOString()); } catch (e) {}
     renderBackup();
     toast(`Backup saved: ${plural(state.lehengas.length, 'lehenga')}, ${plural(state.bookings.length, 'booking')}.`);
@@ -854,7 +853,7 @@
         pendingImport = { lehengas: data.lehengas, bookings: data.bookings, exportedAt: data.exportedAt };
       } catch (e) {
         pendingImport = null;
-        toast('That file is not a Garba Gali backup.');
+        toast('That file is not a Ghaghra Gali backup.');
       }
       renderBackup();
     };
