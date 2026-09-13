@@ -8,9 +8,14 @@
 @font-face { font-family: "Hind"; src: url("fonts/Hind-Bold.ttf"); font-weight: 700; }
 
 :root {
-  --kumkum: #9E1236;
-  --kumkum-deep: #6E0B24;
-  --marigold: #E3A21A;
+  --brand: #0B3922;          /* deep green from the logo */
+  --brand-deep: #062617;
+  --gold: #C9973F;           /* the logo's gold, darkened for print contrast */
+  --gold-soft: #DEB47F;
+  --cream: #FEF8E8;
+  --kumkum: #0B3922;         /* headings and numbers follow the brand */
+  --kumkum-deep: #062617;
+  --marigold: #C9973F;
   --ink: #241B1E;
   --ink-2: #5F5257;
   --muted: #8C7E83;
@@ -25,18 +30,18 @@ h1, h2, .display { font-family: "Yatra One", serif; font-weight: 400; }
 
 /* ---------- shared ornament: bandhani dots with a mirror-work hem ---------- */
 .bandhani {
-  background-color: var(--kumkum);
+  background-color: var(--brand);
   background-image:
-    radial-gradient(circle, #E3A21A 0mm, #E3A21A 1.3mm, rgba(227,162,26,0) 1.45mm),
-    radial-gradient(circle, #E3A21A 0mm, #E3A21A 1.3mm, rgba(227,162,26,0) 1.45mm),
-    radial-gradient(circle, rgba(255,244,220,.20) 0mm, rgba(255,244,220,.20) 3.8mm, rgba(255,244,220,0) 4.1mm);
+    radial-gradient(circle, #DEB47F 0mm, #DEB47F 1.3mm, rgba(222,180,127,0) 1.45mm),
+    radial-gradient(circle, #DEB47F 0mm, #DEB47F 1.3mm, rgba(222,180,127,0) 1.45mm),
+    radial-gradient(circle, rgba(254,248,232,.14) 0mm, rgba(254,248,232,.14) 3.8mm, rgba(254,248,232,0) 4.1mm);
   background-size: 11mm 11mm, 11mm 11mm, 44mm 44mm;
   background-position: 0 0, 5.5mm 5.5mm, 16mm 16mm;
 }
 .hem {
   height: 7mm;
-  background-color: var(--marigold);
-  background-image: radial-gradient(circle, #FFFFFF 0mm, #FFFFFF 1.6mm, #9E1236 1.75mm, #9E1236 2.4mm, rgba(158,18,54,0) 2.55mm);
+  background-color: var(--gold-soft);
+  background-image: radial-gradient(circle, #FEF8E8 0mm, #FEF8E8 1.6mm, #0B3922 1.75mm, #0B3922 2.4mm, rgba(11,57,34,0) 2.55mm);
   background-size: 12mm 7mm;
   background-position: 0 center;
 }
@@ -48,15 +53,16 @@ h1, h2, .display { font-family: "Yatra One", serif; font-weight: 400; }
 .cover { page: lookbook; height: 210mm; display: flex; flex-direction: column; }
 .cover-art { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; }
 .cover-plate {
-  background: var(--paper); padding: 14mm 12mm 12mm; text-align: center;
-  width: 96mm; box-shadow: 0 2mm 8mm rgba(40,18,26,.18);
+  background: var(--cream); padding: 10mm 12mm 12mm; text-align: center;
+  width: 100mm; box-shadow: 0 2mm 8mm rgba(6,38,23,.28);
 }
+.cover-plate .logo { width: 72mm; margin: 0 auto 4mm; display: block; }
 .cover-plate .mandala { width: 22mm; height: 22mm; margin: 0 auto 6mm; display: block; }
 .cover-plate h1 { font-size: 30pt; line-height: 1.05; margin: 0 0 2mm; color: var(--kumkum); }
 .cover-plate .tagline { font-size: 10pt; color: var(--ink-2); margin: 0 0 6mm; letter-spacing: .02em; }
-.cover-plate .season { font-size: 8.5pt; letter-spacing: .16em; text-transform: uppercase; color: var(--marigold); font-weight: 600; }
-.cover-foot { margin: 0 12mm 6mm; padding: 3mm 6mm; text-align: center; color: #FFF6E8;
-  font-size: 8.5pt; letter-spacing: .04em; background: rgba(110,11,36,.72); }
+.cover-plate .season { font-size: 8.5pt; letter-spacing: .16em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
+.cover-foot { margin: 0 12mm 6mm; padding: 3mm 6mm; text-align: center; color: var(--cream);
+  font-size: 8.5pt; letter-spacing: .04em; background: rgba(6,38,23,.66); }
 
 .piece { page: lookbook; height: 210mm; display: flex; flex-direction: column; }
 .piece .photo { flex: 1; overflow: hidden; background: var(--paper-2); display: flex; align-items: center; justify-content: center; }

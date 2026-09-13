@@ -3,7 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#B0173F">
+<meta name="theme-color" content="#0B3922">
+<link rel="icon" href="assets/mark.png">
+<link rel="apple-touch-icon" href="assets/mark.png">
 <meta name="robots" content="noindex">
 <title>Ghaghra Gali HQ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,6 +23,7 @@
   --enq:#6E5200; --enq-soft:#F9EEC4;
   --cancel:#8A7E82; --cancel-soft:#F1ECEE;
   --today-tint:#FCF1F4;
+  --brand:#0B3922; --brand-gold:#DEB47F; --brand-cream:#FEF8E8;
   --shadow:0 1px 2px rgba(42,33,36,.06),0 14px 40px rgba(42,33,36,.14);
   --overlay:rgba(34,20,26,.26);
   --toast-bg:#2A2124; --toast-ink:#FFFFFF;
@@ -74,15 +77,15 @@ button{font-family:inherit}
 .mono{font-family:var(--f-mono)}
 
 /* cover: bandhani dots on kumkum, mirror-work hem */
-.cover{height:168px;position:relative;background-color:#9E1236;
+.cover{height:168px;position:relative;background-color:#0B3922;
   background-image:
-    radial-gradient(circle,#F2BE4B 0 2px,transparent 2.6px),
-    radial-gradient(circle,#F2BE4B 0 2px,transparent 2.6px),
-    radial-gradient(circle,rgba(255,244,220,.22) 0 6px,transparent 6.5px);
+    radial-gradient(circle,#DEB47F 0 2px,transparent 2.6px),
+    radial-gradient(circle,#DEB47F 0 2px,transparent 2.6px),
+    radial-gradient(circle,rgba(254,248,232,.16) 0 6px,transparent 6.5px);
   background-size:18px 18px,18px 18px,72px 72px;
   background-position:0 0,9px 9px,27px 27px}
-.cover::after{content:"";position:absolute;left:0;right:0;bottom:0;height:14px;background-color:#E3A21A;
-  background-image:radial-gradient(circle,#F4F6F8 0 3px,#9E1236 3.4px 4.6px,transparent 5px);
+.cover::after{content:"";position:absolute;left:0;right:0;bottom:0;height:14px;background-color:#DEB47F;
+  background-image:radial-gradient(circle,#FEF8E8 0 3px,#0B3922 3.4px 4.6px,transparent 5px);
   background-size:22px 14px;background-position:0 center}
 
 .page{max-width:1120px;margin:0 auto;padding-inline:clamp(16px,5vw,64px);padding-block:0 120px}
@@ -322,6 +325,8 @@ table.list{width:100%;border-collapse:collapse;min-width:1000px;font-size:14px}
 #login{min-height:100vh}
 .login-card{max-width:380px;margin:-40px auto 0;padding:26px clamp(18px,5vw,28px) 30px;background:var(--ground);border:1px solid var(--line);border-radius:10px;position:relative;box-shadow:var(--shadow)}
 .login-card h1{font-size:clamp(28px,7vw,36px);margin:0 0 2px}
+.login-logo{display:block;width:min(210px,62%);margin:0 auto 6px}
+.page-icon img{width:72px;height:72px;border-radius:50%;object-fit:cover;background:var(--brand-cream)}
 .login-card p{margin:0 0 18px}
 .lbl{display:block;font-size:13px;color:var(--muted);margin:12px 0 4px}
 .f2{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--ground);border:1px solid var(--line-2);border-radius:7px;padding:9px 11px}
@@ -340,7 +345,7 @@ table.list{width:100%;border-collapse:collapse;min-width:1000px;font-size:14px}
 <div id="login">
   <div class="cover" role="img" aria-label="Bandhani cover"></div>
   <div class="login-card">
-    <h1>Ghaghra Gali</h1>
+    <img class="login-logo" src="assets/logo.png" alt="Ghaghra Gali">
     <p class="muted">Sign in to take bookings.</p>
     <form id="login-form" autocomplete="on">
       <label class="lbl" for="login-email">Email</label>
@@ -356,17 +361,7 @@ table.list{width:100%;border-collapse:collapse;min-width:1000px;font-size:14px}
 <div id="app" hidden>
 <div class="cover" role="img" aria-label="Bandhani-dot cover in kumkum red with a mirror-work border"></div>
 <main class="page">
-  <div class="page-icon" aria-hidden="true">
-    <svg viewBox="0 0 64 64" width="60" height="60">
-      <circle cx="32" cy="32" r="30" fill="#B0173F"/>
-      <circle cx="32" cy="32" r="24" fill="none" stroke="#E3A21A" stroke-width="2.5" stroke-dasharray="2 4.3"/>
-      <g fill="#F4F6F8" stroke="#E3A21A" stroke-width="1.5">
-        <circle cx="46" cy="32" r="3.2"/><circle cx="41.9" cy="41.9" r="3.2"/><circle cx="32" cy="46" r="3.2"/><circle cx="22.1" cy="41.9" r="3.2"/>
-        <circle cx="18" cy="32" r="3.2"/><circle cx="22.1" cy="22.1" r="3.2"/><circle cx="32" cy="18" r="3.2"/><circle cx="41.9" cy="22.1" r="3.2"/>
-      </g>
-      <circle cx="32" cy="32" r="7.5" fill="#F4F6F8" stroke="#E3A21A" stroke-width="3"/>
-    </svg>
-  </div>
+  <div class="page-icon"><img src="assets/mark.png" alt="Ghaghra Gali"></div>
   <h1>Ghaghra Gali HQ</h1>
   <div class="meta">
     <span class="meta-chip">Navratri 2026</span>

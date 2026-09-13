@@ -162,12 +162,22 @@ def photo_html(item, target_px, cache):
     return f'<img src="{prepared_photo(path, target_px, cache)}" alt="{esc(item["title"])}">'
 
 
+LOGO = HERE.parent / "assets" / "logo.png"
+
+
+def logo_block():
+    """The shop's logo carries the name, so the cover sets no wordmark of its own."""
+    if LOGO.exists():
+        uri = "data:image/png;base64," + base64.b64encode(LOGO.read_bytes()).decode()
+        return f'<img class="logo" src="{uri}" alt="{esc(SHOP["name"])}">'
+    return f'{MANDALA}<h1>{esc(SHOP["name"])}</h1>'
+
+
 def cover_html():
     return f'''<section class="cover bandhani">
   <div class="cover-art">
     <div class="cover-plate">
-      {MANDALA}
-      <h1>{esc(SHOP["name"])}</h1>
+      {logo_block()}
       <p class="tagline">{esc(SHOP["tagline"])}</p>
       <p class="season">{esc(SHOP["season"])}</p>
     </div>
@@ -181,7 +191,7 @@ def back_html(qr):
     contact = " · ".join(x for x in (SHOP["phone"], SHOP["instagram"], SHOP["address"]) if x)
     qr_block = f'''<div class="ask">
       <div class="qr">{qr}</div>
-      <p><b>Ask on WhatsApp</b>Scan, then send the code of the piece you want —
+      <p><b>Ask on WhatsApp</b>Scan, then send the number of the piece you want —
       for example “No. 07”. We will tell you the rent and whether it is free on your night.</p>
     </div>''' if qr else ""
     return f'''<section class="back">
