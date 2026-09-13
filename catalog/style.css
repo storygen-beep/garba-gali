@@ -1,0 +1,106 @@
+/* Garba Gali catalogue — print styles. Two page sizes share one visual language:
+   A5 lookbook (one piece per page) and A4 counter sheet (four per page). */
+
+@font-face { font-family: "Yatra One"; src: url("fonts/YatraOne-Regular.ttf"); font-weight: 400; }
+@font-face { font-family: "Hind"; src: url("fonts/Hind-Regular.ttf"); font-weight: 400; }
+@font-face { font-family: "Hind"; src: url("fonts/Hind-Medium.ttf"); font-weight: 500; }
+@font-face { font-family: "Hind"; src: url("fonts/Hind-SemiBold.ttf"); font-weight: 600; }
+@font-face { font-family: "Hind"; src: url("fonts/Hind-Bold.ttf"); font-weight: 700; }
+
+:root {
+  --kumkum: #9E1236;
+  --kumkum-deep: #6E0B24;
+  --marigold: #E3A21A;
+  --ink: #241B1E;
+  --ink-2: #5F5257;
+  --muted: #8C7E83;
+  --paper: #FFFFFF;
+  --paper-2: #FBF6F2;
+  --rule: #E8DED9;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; font-family: "Hind", sans-serif; color: var(--ink); background: var(--paper); }
+h1, h2, .display { font-family: "Yatra One", serif; font-weight: 400; }
+
+/* ---------- shared ornament: bandhani dots with a mirror-work hem ---------- */
+.bandhani {
+  background-color: var(--kumkum);
+  background-image:
+    radial-gradient(circle, #E3A21A 0mm, #E3A21A 1.3mm, rgba(227,162,26,0) 1.45mm),
+    radial-gradient(circle, #E3A21A 0mm, #E3A21A 1.3mm, rgba(227,162,26,0) 1.45mm),
+    radial-gradient(circle, rgba(255,244,220,.20) 0mm, rgba(255,244,220,.20) 3.8mm, rgba(255,244,220,0) 4.1mm);
+  background-size: 11mm 11mm, 11mm 11mm, 44mm 44mm;
+  background-position: 0 0, 5.5mm 5.5mm, 16mm 16mm;
+}
+.hem {
+  height: 7mm;
+  background-color: var(--marigold);
+  background-image: radial-gradient(circle, #FFFFFF 0mm, #FFFFFF 1.6mm, #9E1236 1.75mm, #9E1236 2.4mm, rgba(158,18,54,0) 2.55mm);
+  background-size: 12mm 7mm;
+  background-position: 0 center;
+}
+
+/* ---------- the lookbook: A5, one piece per page ---------- */
+@page lookbook { size: A5 portrait; margin: 0; }
+.book { page: lookbook; }
+
+.cover { page: lookbook; height: 210mm; display: flex; flex-direction: column; }
+.cover-art { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; }
+.cover-plate {
+  background: var(--paper); padding: 14mm 12mm 12mm; text-align: center;
+  width: 96mm; box-shadow: 0 2mm 8mm rgba(40,18,26,.18);
+}
+.cover-plate .mandala { width: 22mm; height: 22mm; margin: 0 auto 6mm; display: block; }
+.cover-plate h1 { font-size: 30pt; line-height: 1.05; margin: 0 0 2mm; color: var(--kumkum); }
+.cover-plate .tagline { font-size: 10pt; color: var(--ink-2); margin: 0 0 6mm; letter-spacing: .02em; }
+.cover-plate .season { font-size: 8.5pt; letter-spacing: .16em; text-transform: uppercase; color: var(--marigold); font-weight: 600; }
+.cover-foot { margin: 0 12mm 6mm; padding: 3mm 6mm; text-align: center; color: #FFF6E8;
+  font-size: 8.5pt; letter-spacing: .04em; background: rgba(110,11,36,.72); }
+
+.piece { page: lookbook; height: 210mm; display: flex; flex-direction: column; }
+.piece .photo { flex: 1; overflow: hidden; background: var(--paper-2); display: flex; align-items: center; justify-content: center; }
+.piece .photo img { width: 100%; height: 100%; object-fit: cover; }
+.piece .photo .missing { color: var(--muted); font-size: 9pt; letter-spacing: .1em; text-transform: uppercase; }
+.piece .plate { padding: 7mm 12mm 9mm; display: flex; align-items: flex-end; justify-content: space-between; gap: 6mm; border-top: 0.4mm solid var(--rule); }
+.piece .name { font-size: 15pt; font-weight: 600; line-height: 1.2; margin: 0; }
+.piece .attrs { margin: 1.5mm 0 0; font-size: 9pt; color: var(--ink-2); }
+.attrs .dot { width: 2.8mm; height: 2.8mm; vertical-align: -0.4mm; margin-right: 1.2mm; }
+.piece .code { font-size: 13pt; font-weight: 700; color: var(--kumkum); letter-spacing: .04em; white-space: nowrap; }
+
+/* ---------- the counter sheet: A4, four per page ---------- */
+@page sheet {
+  size: A4 portrait; margin: 14mm 12mm 16mm;
+  @bottom-center {
+    content: "Garba Gali · Navratri 2026 · page " counter(page);
+    font-family: "Hind", sans-serif; font-size: 7.5pt; color: #8C7E83;
+  }
+}
+.sheet { page: sheet; }
+.sheet + .sheet { break-before: page; }
+.sheet-head { display: flex; align-items: baseline; justify-content: space-between; border-bottom: 0.5mm solid var(--kumkum); padding-bottom: 3mm; margin-bottom: 6mm; }
+.sheet-head h2 { font-size: 18pt; color: var(--kumkum); margin: 0; }
+.sheet-head .season { font-size: 8.5pt; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm 8mm; }
+.tile { break-inside: avoid; }
+.tile .photo { width: 100%; height: 96mm; overflow: hidden; background: var(--paper-2); display: flex; align-items: center; justify-content: center; }
+.tile .photo img { width: 100%; height: 100%; object-fit: cover; }
+.tile .photo .missing { color: var(--muted); font-size: 8pt; letter-spacing: .08em; text-transform: uppercase; }
+.tile .line { display: flex; align-items: baseline; justify-content: space-between; gap: 3mm; margin-top: 2.5mm; }
+.tile .name { font-size: 10.5pt; font-weight: 600; line-height: 1.25; }
+.tile .code { font-size: 10pt; font-weight: 700; color: var(--kumkum); white-space: nowrap; }
+.tile .attrs { font-size: 8.5pt; color: var(--ink-2); margin-top: 0.5mm; }
+
+/* ---------- back page ---------- */
+.back { page: lookbook; height: 210mm; display: flex; flex-direction: column; }
+.back .body { flex: 1; padding: 14mm 12mm 8mm; }
+.back h2 { font-size: 20pt; color: var(--kumkum); margin: 0 0 5mm; }
+.back ol { margin: 0 0 7mm; padding-left: 5mm; font-size: 10pt; line-height: 1.55; color: var(--ink-2); }
+.back ol strong { color: var(--ink); }
+.back .ask { background: var(--paper-2); border: 0.4mm solid var(--rule); padding: 6mm; display: flex; gap: 6mm; align-items: center; }
+.back .ask .qr { width: 30mm; height: 30mm; flex: none; }
+.back .ask .qr img { width: 100%; height: 100%; }
+.back .ask p { margin: 0; font-size: 9.5pt; line-height: 1.5; color: var(--ink-2); }
+.back .ask b { color: var(--ink); display: block; font-size: 11pt; margin-bottom: 1.5mm; }
+.back .contact { padding: 0 12mm 10mm; font-size: 9.5pt; color: var(--ink-2); }
+.back .contact b { color: var(--kumkum); }
