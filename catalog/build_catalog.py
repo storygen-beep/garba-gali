@@ -243,19 +243,65 @@ def back_html(qr):
 </section>'''
 
 
-def build_lookbook(items, cache, qr, light=False):
-    pages = [cover_html()]
-    for it in items:
-        pages.append(f'''<section class="piece">
-  <div class="photo">{photo_html(it, 820 if light else 1100, cache, crop=False)}</div>
-  <div class="plate">
+VIEW_LABELS = ["", "Back", "Detail", "Detail"]
+
+
+def extra_views(item):
+    return [v for v in (item.get("photos") or []) if v != item.get("photo_path")]
+
+
+def plate_html(it, extra=""):
+    return f'''<div class="plate">
     <div class="plate-text">
       <p class="name">{esc(it["title"])}</p>
       <p class="attrs">{attrs_html(it)}</p>
     </div>
-    {view_thumbs(it, cache)}
+    {extra}
+    <div class="code"><span class="no">No.</span>{esc(it["ref"])}</div>
+  </div>'''
+
+
+def build_lookbook(items, cache, qr, light=False, layout="rows"):
+    """layout 'rows': front large with the other views beneath it, one page a piece.
+       layout 'pages': every view gets a page of its own."""
+    main_px = 820 if light else 1100
+    pages = [cover_html()]
+    for it in items:
+        if layout == "pages":
+            pages.append(f'''<section class="piece">
+  <div class="photo">{photo_html(it, main_px, cache, crop=False)}</div>
+  {plate_html(it)}
+</section>''')
+            for n, view in enumerate(extra_views(it), 1):
+                path = PHOTO_DIR / view
+                if not path.exists():
+                    continue
+                pages.append(f'''<section class="piece">
+  <div class="photo"><img src="{prepared_photo(path, main_px, cache, crop=False)}" alt=""></div>
+  <div class="plate">
+    <div class="plate-text">
+      <p class="name">{esc(it["title"])}</p>
+      <p class="attrs">{esc(VIEW_LABELS[min(n, 3)])}</p>
+    </div>
     <div class="code"><span class="no">No.</span>{esc(it["ref"])}</div>
   </div>
+</section>''')
+            continue
+
+        views = []
+        for n, view in enumerate(extra_views(it)[:3], 1):
+            path = PHOTO_DIR / view
+            if not path.exists():
+                continue
+            views.append(f'''<figure>
+        <img src="{prepared_photo(path, 620 if light else 780, cache, crop=False)}" alt="">
+        <figcaption>{esc(VIEW_LABELS[min(n, 3)])}</figcaption>
+      </figure>''')
+        row = f'<div class="views-row">{"".join(views)}</div>' if views else ""
+        pages.append(f'''<section class="piece {"with-views" if views else ""}">
+  <div class="photo">{photo_html(it, main_px, cache, crop=False)}</div>
+  {row}
+  {plate_html(it)}
 </section>''')
     pages.append(back_html(qr))
     return f'<div class="book">{"".join(pages)}</div>'
@@ -294,6 +340,8 @@ def main():
     ap.add_argument("--whatsapp", default="", help="digits for the wa.me QR, e.g. 919812345678")
     ap.add_argument("--quality", type=int, default=82, help="JPEG quality: 82 for WhatsApp, 90 for print")
     ap.add_argument("--light", action="store_true", help="smaller file for sharing on mobile data")
+    ap.add_argument("--layout", choices=["rows", "pages", "plate"], default="pages",
+                    help="rows: views beneath the front; pages: a page per view; plate: thumbnails by the name")
     ap.add_argument("--html", action="store_true", help="also write the HTML, for debugging")
     args = ap.parse_args()
 
@@ -328,8 +376,9 @@ def main():
     if args.light:
         QUALITY = min(QUALITY, 70)
     if args.only != "sheet":
-        targets.append(("lookbook", build_lookbook(items, cache, qr, light=args.light),
-                        f"ghaghra-gali-lookbook{suffix}.pdf"))
+        tag = {"rows": "-A", "pages": "-B", "plate": ""}[args.layout]
+        targets.append(("lookbook", build_lookbook(items, cache, qr, light=args.light, layout=args.layout),
+                        f"ghaghra-gali-lookbook{tag}{suffix}.pdf"))
     if args.only != "lookbook":
         targets.append(("sheet", build_sheet(items, cache), f"ghaghra-gali-counter-sheet{suffix}.pdf"))
 

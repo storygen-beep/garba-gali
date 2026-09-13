@@ -117,3 +117,14 @@ h1, h2, .display { font-family: "Yatra One", serif; font-weight: 400; }
 .piece .plate-text { flex: 1; }
 .views { display: flex; gap: 2mm; flex: none; }
 .views img { width: 21mm; height: 26mm; object-fit: cover; border: 0.3mm solid var(--rule); }
+
+/* Layout A: the front stays the hero, the other views sit under it, big enough to read. */
+.piece.with-views .photo { height: 116mm; }
+.piece.with-views .photo img { max-height: 116mm; }
+.views-row { height: 58mm; display: flex; gap: 4mm; justify-content: center; align-items: flex-start;
+  padding: 2mm 12mm 0; background: var(--cream); }
+.views-row figure { margin: 0; text-align: center; }
+.views-row img { height: 50mm; width: auto; max-width: 44mm; object-fit: contain; display: block; }
+.views-row figcaption { font-size: 7.5pt; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted); margin-top: 1mm; }
+.piece.with-views .plate { height: 36mm; }
